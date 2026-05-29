@@ -1,0 +1,12 @@
+package fr.devisgenerator.devisgenerator.repository;
+
+import fr.devisgenerator.devisgenerator.entity.Quote;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface QuoteRepository extends JpaRepository<Quote, Long> {
+
+    List<Quote> findByUser_Id(Long userId);
+
+}

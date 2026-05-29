@@ -1,0 +1,23 @@
+ALTER TABLE quote
+    ADD COLUMN number VARCHAR DEFAULT 'TEMP',
+ADD COLUMN user_id BIGINT DEFAULT 1,
+ADD COLUMN total_ht NUMERIC,
+ADD COLUMN total_tva NUMERIC,
+ADD COLUMN total_ttc NUMERIC;
+
+ALTER TABLE quote
+    ADD CONSTRAINT fk_quote_user
+        FOREIGN KEY (user_id)
+            REFERENCES app_user(id);
+
+ALTER TABLE quote
+    ALTER COLUMN number SET NOT NULL;
+
+ALTER TABLE quote
+    ALTER COLUMN user_id SET NOT NULL;
+
+ALTER TABLE quote
+    ALTER COLUMN number DROP DEFAULT;
+
+ALTER TABLE quote
+    ALTER COLUMN user_id DROP DEFAULT;
