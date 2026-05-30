@@ -21,7 +21,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
 
     @Override
-    public AuthResponse register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
 
         // 1. vérifier si username existe déjà
         if (userRepository.findByUsername(request.username()).isPresent()) {
@@ -36,13 +36,8 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         // 3. sauvegarder
-        user = userRepository.save(user);
+        userRepository.save(user);
 
-        // 4. générer token
-        String token = jwtService.generateToken(user.getUsername());
-
-        // 5. retourner réponse
-        return new AuthResponse(token);
     }
 
     @Override

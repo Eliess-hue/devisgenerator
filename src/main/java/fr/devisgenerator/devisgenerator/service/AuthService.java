@@ -6,7 +6,7 @@ import fr.devisgenerator.devisgenerator.dto.response.AuthResponse;
 
 public interface AuthService {
 
-    AuthResponse register(RegisterRequest request);
+    void register(RegisterRequest request);
 
     AuthResponse login(LoginRequest request);
 }
