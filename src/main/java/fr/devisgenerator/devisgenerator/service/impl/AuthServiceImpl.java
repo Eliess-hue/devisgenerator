@@ -4,6 +4,8 @@ import fr.devisgenerator.devisgenerator.dto.request.LoginRequest;
 import fr.devisgenerator.devisgenerator.dto.request.RegisterRequest;
 import fr.devisgenerator.devisgenerator.dto.response.AuthResponse;
 import fr.devisgenerator.devisgenerator.entity.AppUser;
+import fr.devisgenerator.devisgenerator.exception.InvalidCredentialsException;
+import fr.devisgenerator.devisgenerator.exception.UserAlreadyExistsException;
 import fr.devisgenerator.devisgenerator.repository.AppUserRepository;
 import fr.devisgenerator.devisgenerator.service.AuthService;
 import fr.devisgenerator.devisgenerator.security.JwtService;
@@ -25,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 1. vérifier si username existe déjà
         if (userRepository.findByUsername(request.username()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new UserAlreadyExistsException("Username already exists");
         }
 
         // 2. créer user
@@ -45,11 +47,11 @@ public class AuthServiceImpl implements AuthService {
 
         // 1. trouver user
         AppUser user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
         // 2. vérifier password
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid credentials");
         }
 
         // 3. générer token

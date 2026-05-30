@@ -9,11 +9,16 @@ import fr.devisgenerator.devisgenerator.entity.AppUser;
 import fr.devisgenerator.devisgenerator.entity.Client;
 import fr.devisgenerator.devisgenerator.entity.Quote;
 import fr.devisgenerator.devisgenerator.entity.QuoteLine;
+import fr.devisgenerator.devisgenerator.exception.ClientNotFoundException;
+import fr.devisgenerator.devisgenerator.exception.InvalidQuoteLineException;
+import fr.devisgenerator.devisgenerator.exception.QuoteLineNotFoundException;
+import fr.devisgenerator.devisgenerator.exception.QuoteNotFoundException;
 import fr.devisgenerator.devisgenerator.repository.ClientRepository;
 import fr.devisgenerator.devisgenerator.repository.QuoteLineRepository;
 import fr.devisgenerator.devisgenerator.repository.QuoteRepository;
 import fr.devisgenerator.devisgenerator.service.QuoteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -197,10 +202,10 @@ public class QuoteServiceImpl implements QuoteService {
     private Quote getOwnedQuote(Long id, AppUser user) {
 
         Quote quote = quoteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Quote not found"));
+                .orElseThrow(() -> new QuoteNotFoundException("Quote not found"));
 
         if (!quote.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException(("Access denied"));
+            throw new AccessDeniedException("Access denied");
         }
 
         return quote;
@@ -209,10 +214,10 @@ public class QuoteServiceImpl implements QuoteService {
     private Client getOwnedClient(Long id, AppUser user) {
 
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
         if (!client.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         return client;
@@ -224,10 +229,10 @@ public class QuoteServiceImpl implements QuoteService {
 
         QuoteLine line = quoteLineRepository.findById(lineId)
                 .orElseThrow(() ->
-                        new RuntimeException("Quote line not found"));
+                        new QuoteLineNotFoundException("Quote line not found"));
 
         if (!line.getQuote().getId().equals(quoteId)) {
-            throw new RuntimeException(
+            throw new InvalidQuoteLineException(
                     "Quote line does not belong to quote"
             );
         }

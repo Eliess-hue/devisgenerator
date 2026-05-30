@@ -4,11 +4,13 @@ import fr.devisgenerator.devisgenerator.dto.request.ClientRequest;
 import fr.devisgenerator.devisgenerator.dto.response.ClientResponse;
 import fr.devisgenerator.devisgenerator.entity.AppUser;
 import fr.devisgenerator.devisgenerator.entity.Client;
+import fr.devisgenerator.devisgenerator.exception.ClientNotFoundException;
 import fr.devisgenerator.devisgenerator.repository.ClientRepository;
 import fr.devisgenerator.devisgenerator.service.ClientService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,11 +71,11 @@ public class ClientServiceImpl implements ClientService {
 
         // 1. récupérer client
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
         // 2. vérifier propriétaire
         if (!client.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         // 3. retourner réponse
@@ -91,11 +93,11 @@ public class ClientServiceImpl implements ClientService {
 
         // 1. récupérer client
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
         // 2. vérifier propriétaire
         if (!client.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         // 3. mettre à jour les données
@@ -122,11 +124,11 @@ public class ClientServiceImpl implements ClientService {
 
         // 1. récupérer client
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
         // 2. vérifier propriétaire
         if (!client.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         // 3. supprimer
