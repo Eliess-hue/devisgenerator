@@ -5,6 +5,7 @@ import fr.devisgenerator.devisgenerator.dto.response.ClientResponse;
 import fr.devisgenerator.devisgenerator.entity.AppUser;
 import fr.devisgenerator.devisgenerator.service.ClientService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class ClientController {
 
     @PostMapping
     public ResponseEntity<ClientResponse> create(
-            @RequestBody ClientRequest request,
+            @Valid @RequestBody ClientRequest request,
             @AuthenticationPrincipal AppUser user) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -48,7 +49,7 @@ public class ClientController {
     @PutMapping("/{id}")
     public ClientResponse update(
             @PathVariable Long id,
-            @RequestBody ClientRequest request,
+            @Valid @RequestBody ClientRequest request,
             @AuthenticationPrincipal AppUser user) {
 
         return clientService.update(id, request, user);

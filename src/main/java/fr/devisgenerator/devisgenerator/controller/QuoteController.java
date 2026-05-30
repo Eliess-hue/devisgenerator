@@ -5,6 +5,7 @@ import fr.devisgenerator.devisgenerator.dto.request.QuoteRequest;
 import fr.devisgenerator.devisgenerator.dto.response.QuoteResponse;
 import fr.devisgenerator.devisgenerator.entity.AppUser;
 import fr.devisgenerator.devisgenerator.service.QuoteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class QuoteController {
 
     @PostMapping
     public ResponseEntity<QuoteResponse> create(
-            @RequestBody QuoteRequest request,
+            @Valid @RequestBody QuoteRequest request,
             @AuthenticationPrincipal AppUser user) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -47,7 +48,7 @@ public class QuoteController {
     @PutMapping("/{id}")
     public QuoteResponse update(
             @PathVariable Long id,
-            @RequestBody QuoteRequest request,
+            @Valid @RequestBody QuoteRequest request,
             @AuthenticationPrincipal AppUser user) {
 
         return quoteService.update(id, request, user);
@@ -66,7 +67,7 @@ public class QuoteController {
     @PostMapping("/{id}/lines")
     public ResponseEntity<QuoteResponse> addLine(
             @PathVariable Long id,
-            @RequestBody QuoteLineRequest request,
+            @Valid @RequestBody QuoteLineRequest request,
             @AuthenticationPrincipal AppUser user) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
