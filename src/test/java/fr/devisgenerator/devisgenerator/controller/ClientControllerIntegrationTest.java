@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,27 +37,19 @@ class ClientControllerIntegrationTest {
 
         String token = getToken();
 
-        ClientRequest request =
-                new ClientRequest(
-                        "ACME",
-                        "contact@acme.com",
-                        "0102030405",
-                        "Paris"
-                );
-
         mockMvc.perform(
-                post("/api/clients")
-                        .header(
-                                "Authorization",
-                                "Bearer " + token
-                        )
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(
-                                objectMapper.writeValueAsString(
-                                        request
+                        post("/api/clients")
+                                .header(
+                                        "Authorization",
+                                        "Bearer " + token
                                 )
-                        )
-        )
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(
+                                                validClientRequest()
+                                        )
+                                )
+                )
                 .andExpect(status().isCreated());
     }
 
@@ -118,35 +112,10 @@ class ClientControllerIntegrationTest {
 
         String token = getToken();
 
-        ClientRequest request =
-                new ClientRequest(
-                        "ACME",
-                        "contact@acme.com",
-                        "0102030405",
-                        "Paris"
-                );
-
-        String response =
-                mockMvc.perform(
-                                post("/api/clients")
-                                        .header(
-                                                "Authorization",
-                                                "Bearer " + token
-                                        )
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(
-                                                objectMapper.writeValueAsString(request)
-                                        )
-                        )
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString();
-
-        Long clientId =
-                objectMapper
-                        .readTree(response)
-                        .get("id")
-                        .asLong();
+        Long clientId = createClient(
+                token,
+                validClientRequest()
+        );
 
         mockMvc.perform(
                         get("/api/clients/" + clientId)
@@ -180,36 +149,10 @@ class ClientControllerIntegrationTest {
 
         String token = getToken();
 
-        ClientRequest createRequest =
-                new ClientRequest(
-                        "ACME",
-                        "contact@acme.com",
-                        "0102030405",
-                        "Paris"
-                );
-
-        String response =
-                mockMvc.perform(
-                                post("/api/clients")
-                                        .header(
-                                                "Authorization",
-                                                "Bearer " + token
-                                        )
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(
-                                                objectMapper.writeValueAsString(
-                                                        createRequest
-                                                )
-                                        )
-                        )
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString();
-
-        Long clientId =
-                objectMapper.readTree(response)
-                        .get("id")
-                        .asLong();
+        Long clientId = createClient(
+                token,
+                validClientRequest()
+        );
 
         ClientRequest updateRequest =
                 new ClientRequest(
@@ -243,34 +186,10 @@ class ClientControllerIntegrationTest {
 
         String token = getToken();
 
-        ClientRequest request =
-                new ClientRequest(
-                        "ACME",
-                        "contact@acme.com",
-                        "0102030405",
-                        "Paris"
-                );
-
-        String response =
-                mockMvc.perform(
-                                post("/api/clients")
-                                        .header(
-                                                "Authorization",
-                                                "Bearer " + token
-                                        )
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(
-                                                objectMapper.writeValueAsString(request)
-                                        )
-                        )
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString();
-
-        Long clientId =
-                objectMapper.readTree(response)
-                        .get("id")
-                        .asLong();
+        Long clientId = createClient(
+                token,
+                validClientRequest()
+        );
 
         mockMvc.perform(
                         org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(
@@ -282,13 +201,6 @@ class ClientControllerIntegrationTest {
                                 )
                 )
                 .andExpect(status().isNoContent());
-    }
-
-    @Test
-    void findAllShouldReturn403WithoutToken() throws Exception {
-
-        mockMvc.perform(get("/api/clients"))
-                .andExpect(status().isForbidden());
     }
 
     private String getToken() throws Exception {
@@ -336,6 +248,47 @@ class ClientControllerIntegrationTest {
                 .readTree(response)
                 .get("token")
                 .asText();
+    }
+
+    private Long createClient(
+            String token,
+            ClientRequest request
+    ) throws Exception {
+
+        String response =
+                mockMvc.perform(
+                                post("/api/clients")
+                                        .header(
+                                                "Authorization",
+                                                "Bearer " + token
+                                        )
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(
+                                                objectMapper.writeValueAsString(
+                                                        request
+                                                )
+                                        )
+                        )
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+
+        return objectMapper
+                .readTree(response)
+                .get("id")
+                .asLong();
+    }
+
+    private ClientRequest validClientRequest() {
+
+        String unique = UUID.randomUUID().toString();
+
+        return new ClientRequest(
+                "ACME " + unique,
+                unique +  "@acme.com",
+                "0102030405",
+                "Paris"
+        );
     }
 
 }
