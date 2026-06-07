@@ -4,6 +4,7 @@ import fr.devisgenerator.devisgenerator.dto.request.QuoteLineRequest;
 import fr.devisgenerator.devisgenerator.dto.request.QuoteRequest;
 import fr.devisgenerator.devisgenerator.dto.response.AppUserResponse;
 import fr.devisgenerator.devisgenerator.dto.response.ClientResponse;
+import fr.devisgenerator.devisgenerator.dto.response.QuoteLineResponse;
 import fr.devisgenerator.devisgenerator.dto.response.QuoteResponse;
 import fr.devisgenerator.devisgenerator.entity.AppUser;
 import fr.devisgenerator.devisgenerator.entity.Client;
@@ -158,6 +159,20 @@ public class QuoteServiceImpl implements QuoteService {
 
     private QuoteResponse toQuoteResponse(Quote quote) {
 
+        List<QuoteLineResponse> lines = quoteLineRepository
+                .findByQuote_Id(quote.getId())
+                .stream()
+                .map(line -> new QuoteLineResponse(
+                        line.getId(),
+                        line.getDescription(),
+                        line.getQuantity(),
+                        line.getUnitPrice(),
+                        line.getUnitPrice().multiply(
+                                BigDecimal.valueOf(line.getQuantity())
+                        )
+                ))
+                .toList();
+
         return new QuoteResponse(
                 quote.getId(),
                 quote.getNumber(),
@@ -167,7 +182,8 @@ public class QuoteServiceImpl implements QuoteService {
                 quote.getTotalTtc(),
                 quote.getCreatedAt(),
                 toClientResponse(quote.getClient()),
-                toAppUserResponse(quote.getUser())
+                toAppUserResponse(quote.getUser()),
+                lines  // ← ajouter
         );
     }
 

@@ -2,6 +2,7 @@ package fr.devisgenerator.devisgenerator.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record QuoteResponse(
         Long id,
@@ -12,6 +13,7 @@ public record QuoteResponse(
         BigDecimal totalTtc,
         LocalDateTime createdAt,
         ClientResponse client,
-        AppUserResponse user
+        AppUserResponse user,
+        List<QuoteLineResponse> lines
 ) {
 }
