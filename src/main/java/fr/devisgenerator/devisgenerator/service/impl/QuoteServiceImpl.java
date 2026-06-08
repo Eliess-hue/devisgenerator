@@ -144,7 +144,9 @@ public class QuoteServiceImpl implements QuoteService {
                 client.getName(),
                 client.getEmail(),
                 client.getPhone(),
-                client.getAddress()
+                client.getAddress(),
+                0,
+                "-"
         );
     }
 

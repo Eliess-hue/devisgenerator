@@ -5,6 +5,8 @@ public record ClientResponse(
         String name,
         String email,
         String phone,
-        String address
+        String address,
+        Integer quoteCount,
+        String lastQuoteNumber
 ) {
 }

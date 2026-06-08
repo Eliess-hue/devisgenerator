@@ -4,8 +4,10 @@ import fr.devisgenerator.devisgenerator.dto.request.ClientRequest;
 import fr.devisgenerator.devisgenerator.dto.response.ClientResponse;
 import fr.devisgenerator.devisgenerator.entity.AppUser;
 import fr.devisgenerator.devisgenerator.entity.Client;
+import fr.devisgenerator.devisgenerator.entity.Quote;
 import fr.devisgenerator.devisgenerator.exception.ClientNotFoundException;
 import fr.devisgenerator.devisgenerator.repository.ClientRepository;
+import fr.devisgenerator.devisgenerator.repository.QuoteRepository;
 import fr.devisgenerator.devisgenerator.service.ClientService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ import java.util.List;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
-
+    private final QuoteRepository quoteRepository;
 
     @Override
     public ClientResponse create(ClientRequest request, AppUser user) {
@@ -38,13 +40,8 @@ public class ClientServiceImpl implements ClientService {
         client = clientRepository.save(client);
 
         // 3. retourner réponse
-        return new ClientResponse(
-                client.getId(),
-                client.getName(),
-                client.getEmail(),
-                client.getPhone(),
-                client.getAddress()
-        );
+        return toClientResponse(client);
+
     }
 
     @Override
@@ -55,13 +52,7 @@ public class ClientServiceImpl implements ClientService {
 
         // 2. convertir et retourner chaque Client en ClientResponse
         return clients.stream()
-                .map(client -> new ClientResponse(
-                        client.getId(),
-                        client.getName(),
-                        client.getEmail(),
-                        client.getPhone(),
-                        client.getAddress()
-                ))
+                .map(this::toClientResponse)
                 .toList();
 
     }
@@ -79,13 +70,7 @@ public class ClientServiceImpl implements ClientService {
         }
 
         // 3. retourner réponse
-        return new ClientResponse(
-                client.getId(),
-                client.getName(),
-                client.getEmail(),
-                client.getPhone(),
-                client.getAddress()
-        );
+        return toClientResponse(client);
     }
 
     @Override
@@ -110,13 +95,7 @@ public class ClientServiceImpl implements ClientService {
         client = clientRepository.save(client);
 
         // 5. retourner réponse
-        return new ClientResponse(
-                client.getId(),
-                client.getName(),
-                client.getEmail(),
-                client.getPhone(),
-                client.getAddress()
-        );
+        return toClientResponse(client);
     }
 
     @Override
@@ -134,4 +113,33 @@ public class ClientServiceImpl implements ClientService {
         // 3. supprimer
         clientRepository.delete(client);
     }
+
+    private ClientResponse toClientResponse(
+            Client client
+    ) {
+
+        int quoteCount =
+                quoteRepository.countByClient_Id(
+                        client.getId()
+                );
+
+        String lastQuoteNumber =
+                quoteRepository
+                        .findTopByClient_IdOrderByCreatedAtDesc(
+                                client.getId()
+                        )
+                        .map(Quote::getNumber)
+                        .orElse("-");
+
+        return new ClientResponse(
+                client.getId(),
+                client.getName(),
+                client.getEmail(),
+                client.getPhone(),
+                client.getAddress(),
+                quoteCount,
+                lastQuoteNumber
+        );
+    }
+
 }
