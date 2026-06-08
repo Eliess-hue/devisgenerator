@@ -55,7 +55,7 @@ class ClientServiceImplTest {
         when(clientRepository.save(any(Client.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        // ✅ Mock des appels QuoteRepository dans toClientResponse()
+        // Mock des appels QuoteRepository dans toClientResponse()
         mockQuoteInformations(null, 0, null);
 
         // Act
@@ -88,7 +88,7 @@ class ClientServiceImplTest {
         when(clientRepository.findByUser_Id(1L))
                 .thenReturn(List.of(client));
 
-        // ✅ Le client a l'id 1L, 3 devis, dernier = "DEV-2024-003"
+        // Le client a l'id 1L, 3 devis, dernier = "DEV-2024-003"
         mockQuoteInformations(1L, 3, "DEV-2024-003");
 
         // Act
@@ -119,7 +119,7 @@ class ClientServiceImplTest {
         when(clientRepository.findById(1L))
                 .thenReturn(Optional.of(client));
 
-        // ✅ Pas de devis pour ce client
+        // Pas de devis pour ce client
         mockQuoteInformations(1L, 0, null);
 
         // Act
@@ -208,7 +208,7 @@ class ClientServiceImplTest {
         when(clientRepository.save(any(Client.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        // ✅ 2 devis, dernier = "DEV-2025-002"
+        // 2 devis, dernier = "DEV-2025-002"
         mockQuoteInformations(1L, 2, "DEV-2025-002");
 
         // Act
